@@ -16,6 +16,16 @@ namespace OWASP.WebGoat.NET.App_Code
             
         private const char SPLIT_CHAR = '=';
         
+        private string Protect(string value, string purpose)
+        {
+            return Convert.ToBase64String(MachineKey.Protect(Encoding.UTF8.GetBytes(value), purpose));
+        }
+        
+        private string Unprotect(string value, string purpose)
+        {
+            return Encoding.UTF8.GetString(MachineKey.Unprotect(Convert.FromBase64String(value), purpose));
+        }
+        
         public ConfigFile(string fileName)
         {
             _filePath = fileName;
@@ -88,13 +98,23 @@ namespace OWASP.WebGoat.NET.App_Code
             key = key.ToLower();
             
             if (_settings.ContainsKey(key))
-                return _settings[key];
-                    
+            {
+                string value = _settings[key];
+                if (key == DbConstants.KEY_PWD.ToLower())
+                {
+                    value = Unprotect(value, "Password");
+                }
+                return value;
+            }
             return string.Empty;
         }
             
         public void Set(string key, string value)
         {
+            if (key.ToLower() == DbConstants.KEY_PWD.ToLower())
+            {
+                value = Protect(value, "Password");
+            }
             _settings[key.ToLower()] = value;
         }
 
