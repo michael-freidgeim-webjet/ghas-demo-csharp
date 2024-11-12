@@ -9,6 +9,7 @@ using System.IO;
 using System.Configuration;
 using OWASP.WebGoat.NET.App_Code.DB;
 using OWASP.WebGoat.NET.App_Code;
+using System.Web.Security;
 
 namespace OWASP.WebGoat.NET
 {
